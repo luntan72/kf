@@ -1,0 +1,17 @@
+<?php
+	require_once('toolfactory.php');
+	$tool = toolFactory::get('kf');
+	$params = isset($this->params) ? $this->params : array();
+	$ms = count($this->cols);
+	if ($ms < 8)
+		$cols = 1;
+	else
+		$cols = 1;
+/*	
+	else if ($ms < 16)
+		$cols = 2;
+	else
+		$cols = 3;
+*/	
+	$tool->cf($this->cols, true, null, $cols, false, $params, true);
+?>

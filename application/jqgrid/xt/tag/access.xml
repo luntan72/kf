@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<role_access>
+	<all>
+		<all value='0' />
+	</all>
+	<admin>
+		<all value='1' />
+	</admin>
+	<row_owner extends='admin'>
+	
+	</row_owner>
+</role_access>

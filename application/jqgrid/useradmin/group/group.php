@@ -1,0 +1,18 @@
+<?php
+require_once('table_desc.php');
+
+class useradmin_group extends table_desc{
+	protected function init($params){
+		parent::init($params);
+		$this->options['list'] = array(
+            'id'=>array('editable'=>false),
+			'name'=>array('unique'=>true),
+			'description',
+			'user_id'=>array('label'=>'User', 'search'=>true, 'editable'=>true, 'editrules'=>array('required'=>true)),
+			'testcase_type_id'=>array('label'=>'Testcase Type', 'editable'=>true, 'search'=>true, 'data_source_db'=>'xt')
+        );
+		$this->options['edit'] = array('name', 'description', 'user_id', 'testcase_type_id'); 
+		$this->options['linkTables'] = array('m2m'=>array('user', array('db'=>'xt', 'table'=>'testcase_type', 'link_db'=>'xt', 'link_table'=>'group_testcase_type', 'self_link_field'=>'group_id')));
+	}
+}
+?>

@@ -1,0 +1,26 @@
+<?php
+	$columnMap = array(
+		'default'=>array(
+			'start_row'=>2,
+			'columns'=>array(
+				'code'=>'A',
+				'testcase_module'=>'B',
+				'testcase_category'=>'C',
+				'testcase_source'=>'D',
+				'objective'=>'E',
+				'precondition'=>'F',
+				'steps'=>'G',
+				'expected_result'=>'H',
+				'auto_level'=>'I',
+				'testcase_priority'=>'J',
+				'project'=>'M',
+				'summary'=>'O',
+				'command'=>'P',
+				'testcase_type'=>'Q',
+				'testcase_testpoint'=>'R',
+				'update_comment'=>'S',
+				'config'=>'T'
+			)
+		)
+	);
+?>

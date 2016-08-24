@@ -1,0 +1,4 @@
+<form id='import_form' enctype="multipart/form-data" method='post' action='/jqgrid/jqgrid/oper/import/db/<?php echo $this->db;?>/table/<?php echo $this->table;?>/subdir/<?php echo $this->subdir;?>/id/<?php echo $this->id;?>/isfiles/<?php echo $this->isfiles;?>/cell_id/<?php echo $this->cell_id;?>' target='hidden_frame'>
+	File<span style="color:red">*</span>:<input id="uploaded_file" name="uploaded_file" prop_edit="readonly" class="ces" value="" editable="1" original_value="" required="1" style="width:99%" type="file"><input type="submit" id='upload_button' value="Upload" />
+</form>
+<iframe name='hidden_frame' id='hidden_frame' ></iframe>

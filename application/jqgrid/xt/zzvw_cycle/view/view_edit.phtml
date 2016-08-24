@@ -1,0 +1,34 @@
+<div id='div_view_edit'>
+<?php
+//if($this->id == 0){
+?>
+	<form id='import_form' enctype="multipart/form-data" method='post' action='/jqgrid/jqgrid/oper/import_yml/db/<?php echo $this->db;?>/table/<?php echo $this->table;?>' target='hidden_frame'>
+<?php
+//}
+?>
+		<fieldset>
+			<?php
+				echo $this->partial($this->node['view_file'], $this->node);
+		?>
+		</fieldset>
+<?php
+//if($this->id == 0){
+?>
+	</form>
+<?php
+//}
+?>
+</div>
+<div id="div_button_edit">
+<?php
+	echo $this->partial('button.phtml', $this);
+?>
+</div>
+<?php
+//if($this->id == 0){
+
+?>
+<iframe name='hidden_frame' id='hidden_frame' width="100%"></iframe>
+<?php
+//}
+?>

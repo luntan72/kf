@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<role_access>
+	<assistant_admin extends='all'>
+		<all value='1'/>
+	</assistant_admin>
+	
+	<admin extends='assistant_admin'>
+	
+	</admin>
+</role_access>

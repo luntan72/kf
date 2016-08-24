@@ -1,0 +1,10 @@
+<?php
+	require_once('toolfactory.php');
+	$tool = toolFactory::get('kf');
+	$editing = isset($this->editing) ? $this->editing : false;
+	$cols = isset($this->cols) ? $this->cols : 1;
+	$display_status = isset($this->display_status) ? $this->display_status : DISPLAY_STATUS_VIEW;
+// print_r($this->model);	
+	$tool->cf($this->model, $this->value, $cols, $display_status);
+	// $tool->cf($this->model, $editing, $this->value, $cols, false, array(), $this->new);
+?>

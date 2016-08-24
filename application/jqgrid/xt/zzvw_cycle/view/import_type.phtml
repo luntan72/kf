@@ -1,0 +1,60 @@
+<form id='cycle_import_form' enctype="multipart/form-data" method='post' action='/jqgrid/jqgrid/oper/import/db/<?php echo $this->db;?>/table/<?php echo $this->table;?>' target='cycle_hidden_frame'>
+	<?php
+		$ces = array(
+			array('name'=>'group_id', 'label'=>'Group', 'DATA_TYPE'=>'int', 'editable'=>true,			
+					'type'=>'select', 'editoptions'=>array('value'=>$this->group['value']), 'editrules'=>array('required'=>true)),
+			array('name'=>'owner_id', 'label'=>'Owner', 'DATA_TYPE'=>'int', 'editable'=>true,			
+					'type'=>'select', 'editoptions'=>array('value'=>$this->owner['value'])),
+			// array('name'=>'cycle_type_id', 'label'=>'Cycle Type', 'DATA_TYPE'=>'int', 'editable'=>true, 'editrules'=>array('required'=>true), 
+					//'type'=>'select', 'editoptions'=>array('value'=>$this->cycle_type_id['value'])),
+			array('name'=>'test_env_id', 'label'=>'Test Env', 'DATA_TYPE'=>'int', 'editable'=>true, 'editrules'=>array('required'=>true), 
+					'type'=>'select', 'editoptions'=>array('value'=>$this->test_env_id['value'])),
+			array('name'=>'testcase_type_ids', 'label'=>'Case Type', 'type'=>'select', 'editable'=>true, 'editrules'=>array('required'=>true),
+					'editoptions'=>array('value'=>$this->testcase_type_ids['value'])),
+			array('name'=>'prj_ids', 'label'=>'Project', 'type'=>'single_multi', 'init_type'=>'single', 'single_multi'=>array('db'=>$this->db, 'table'=>'prj', 'label'=>'Project'), 
+					'editable'=>true, 'editrules'=>array('required'=>false), 'editoptions'=>array('value'=>$this->prj_ids['value']))
+		);
+		if($this->id){
+			$ces[1]['label'] = 'Testor';
+			unset($ces[0]);
+			// unset($ces[2]);
+			$ces1 = array(
+				array('name'=>'compiler_ids', 'label'=>'Compiler', 'type'=>'checkbox', 'editable'=>true, 
+							'editrules'=>array('required'=>false), 'editoptions'=>array('value'=>$this->compiler_ids['value'])),
+				array('name'=>'build_target_ids', 'label'=>'Target', 'type'=>'checkbox', 'editable'=>true, 
+							'editrules'=>array('required'=>false), 'editoptions'=>array('value'=>$this->build_target_ids['value'])),
+			);
+			$ces = array_merge($ces, $ces1);
+		}
+		$ces2 = array(
+			array('name'=>'config_type', 'label'=>'Config Type', 'DATA_TYPE'=>'int', 'editable'=>true, 'editrules'=>array('required'=>true), 
+				'type'=>'select', 'editoptions'=>array('value'=>$this->config_type)),
+			array('name'=>'uploaded_file', 'label'=>'File', 'DATA_TYPE'=>'int', 'editable'=>true, 'editrules'=>array('required'=>true), 'type'=>'file')
+		);
+		$ces = array_merge($ces, $ces2);
+		if(!empty($this->defval)){
+			foreach($ces as &$v){
+				if(in_array($v['name'], array_keys($this->defval))){
+					// if('owner_id' != $v['name'] && 'test_env_id' != $v['name'])
+						// $v['editable'] = false;
+					$v['defval'] = $this->defval[$v['name']];
+				}
+			}
+		}
+		if(!empty($this->cart_data)){
+			foreach($ces as &$v){
+				if(in_array($v['name'], array_keys($this->cart_data))){
+					$v['single_multi']['data'] = $this->cart_data[$v['name']];
+				}
+			}
+		}
+		if(!empty($this->zzvw_mcuauto_request_ids))
+			$ces = array(
+				array('name'=>'zzvw_mcuauto_request_ids', 'label'=>'DP ReqId', 'DATA_TYPE'=>'text', 'editable'=>true, 'editrules'=>array('required'=>true),'editoptions'=>array('value'=>$this->zzvw_mcuauto_request_ids))
+			);
+		$tool = toolFactory::get('kf');
+		$tool->cf($ces, true, 'new', 1, false, array(), true);
+	?>
+</form>
+<iframe name='cycle_hidden_frame' id='cycle_hidden_frame' width="100%"></iframe>
+

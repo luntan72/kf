@@ -1,0 +1,40 @@
+<?php
+	$str = "";
+	foreach($this->data as $row){	
+// print_r($row);
+		$str = $str."		<tr class='even'>"."\n";
+		$str = $str."			<td width=12%'>{$row['code']}</td>"."\n";
+		$str = $str."			<td width=16%'>{$row['summary']}</td>"."\n";
+		$str = $str."			<td width=5%'>{$row['tester_id']}</td>"."\n";
+		$str = $str."			<td width=5%'>{$row['result']}</td>"."\n";
+		$str = $str."			<td width=10%'>{$row['deadline']}</td>"."\n";
+		$str = $str."			<td width=30%'>{$row['comment']}</td>"."\n";
+		$str = $str."			<td width=12%'>{$row['defect_ids']}</td>"."\n";
+		$str = $str."			<td width=10%'>{$row['finish_time']}</td>"."\n";
+		$str = $str."		</tr>"."\n";	
+	}
+?>
+<p>
+	<b>OverNight Cases Info Summary</b>
+	&nbsp&nbsp&nbsp&nbsp
+	<?php
+		if($this->needUpdate){
+		echo "<a href=\"javascript:XT.updateCertainPage('xt','zzvw_cycle', 'zzvw_cycle', '{$this->id}', '{$this->id}', 'cycle_overnight')\">Click to Update</a>";
+		} 
+	?>
+</p>
+<div id="cycle_overnight_<?php echo $this->id;?>">
+	<table width="99%" class="table">
+		<tr class="even">
+			<th width="12%">TestCase</th>
+			<th width="16%">Summary</th>
+			<th width="5%">Tester</th>
+			<th width="5%">Result</th>
+			<th width="10%">Deadline</th>
+			<th width="30%">Comment</th>
+			<th width="12%">Jira ID</th>
+			<th width="10%">Finish Time</th>
+		</tr>
+		<?php print_r($str);?>
+	</table>
+</div>

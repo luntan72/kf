@@ -1,0 +1,11 @@
+<?php
+require_once('toolfactory.php');
+
+$tool = toolFactory::get('kf');
+$es = array(
+	// array('label'=>'testcase_type_id', 'name'=>'testcase_type_id', 'editable'=>true, 'DATA_TYPE'=>'int', 'type'=>'select', 'editrules'=>array('required'=>true), 'editoptions'=>array('value'=>$this->testcase_type)),
+	array('label'=>'Include Projects', 'name'=>'prj_ids', 'editable'=>true, 'DATA_TYPE'=>'text', 'type'=>'cart', 'editrules'=>array('required'=>true), 'cart_db'=>'xt', 'cart_table'=>'prj')
+);
+$tool->cf($es, true, null, 1);
+
+?>

@@ -1,0 +1,55 @@
+<table width='80%'>
+	<tr>
+		<td>
+			<label for="export_type_default">
+				<input type="radio" name="export_type" id="export_type_default" checked="checked" value="excel"> 
+				Export the selected rows
+			</label> 
+		</td> 
+	</tr> 
+	<tr>
+		<td>
+			<label for="export_type_last_result">
+				<input type="radio" name="export_type" id="export_type_last_result" value="last_result"> 
+				Last Test Result for the selected projects
+			</label> 
+		</td> 
+	</tr> 
+	<tr>
+		<td>
+			<label for="export_type_cycle_result">
+				<input type="radio" name="export_type" id="export_type_cycle_result" value="cycle_result"> 
+				Export Cycle Result
+			</label> 
+		</td> 
+	</tr> 
+	<tr>
+		<td>
+			<label for="export_type_cycle_result_full">
+				<input type="radio" name="export_type" id="export_type_cycle_result_full" value="cycle_result_full"> 
+				Export Full Case Result For Linux
+			</label> 
+		</td> 
+	</tr>
+	<tr>
+		<td>
+			<label for="export_type_excel_testplan_detail">
+				<input type="radio" name="export_type" id="export_type_excel_testplan_detail" value="excel_testplan_detail"> 
+				Export testplan case detail for LinuxBSP
+			</label> 
+		</td> 
+	</tr> 
+	<tr>
+		<td>
+			<label for="export_type_excel_testplan_detail_full">
+				<input type="radio" name="export_type" id="export_type_excel_testplan_detail_full" value="excel_testplan_detail_full"> 
+				Export testplan case detail for LinuxBSP Full
+				<div id='div_for_report_options'>
+					<?php
+						echo $this->partial('cycle_report_options.phtml', $this);
+					?>
+				</div>
+			</label> 
+		</td> 
+	</tr> 
+</table> 

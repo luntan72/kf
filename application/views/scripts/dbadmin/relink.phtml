@@ -1,0 +1,17 @@
+<div>
+	<button id="btn_relink" value="Start to relink">Start relink</button>
+</div>
+
+<script>
+	$('#btn_relink').click(function(){
+		var dialog = XT.waitingDialog();
+		$.post('/dbadmin/relink/', function(data){
+			dialog.dialog('close');
+			if (data.errcode == 0)
+				alert("success to relink");
+			else
+				alert("Fail to relink");
+		}, 'json');
+	
+	});
+</script>

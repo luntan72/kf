@@ -1,0 +1,23 @@
+<table width='80%'>
+	<tr>
+		<td>
+			<label for="export_type_default">
+				<input type="radio" name="export_type" id="export_type_default" checked="checked" value="excel"> 
+				Export the selected rows
+			</label> 
+		</td> 
+	</tr> 
+	<tr>
+		<td>
+			<label for="export_type_excel_testplan">
+				<input type="radio" name="export_type" id="export_type_excel_testplan" value="excel_testplan"> 
+				Test Plan for the selected modules
+				<div id='div_for_report_options'>
+					<?php
+						echo $this->partial('testcase_module_report_options.phtml', $this);
+					?>
+				</div>
+			</label> 
+		</td> 
+	</tr> 
+</table> 
