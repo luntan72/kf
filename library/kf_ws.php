@@ -48,17 +48,21 @@ print_r($socket);
                         continue;
                     } 
 					else {
-                        //$this->connect($client);
-                        array_push($this->sockets, $client);
+                        $this->connect($client);
                         echo "connect client\n";
                     }
                 } 
 				else {
                     $bytes = @socket_recv($socket,$buffer,2048,0);
-                    if($bytes == 0) return;
-                    if (!$this->handshake) {
+// print_r($buffer);					
+                    if($bytes == 0){
+						$this->disconnect($socket);
+						break;
+					}
+					$user_index = $this->getUserIndexBySocket($socket);//$this->users[$socket];
+                    if (!$this->users[$user_index]['handshaked']) {
                         // 如果没有握手，先握手回应
-                        $this->doHandShake($socket, $buffer);
+                        $this->doHandShake($user_index, $buffer);
                         echo "shakeHands\n";
                     } 
 					else {
@@ -75,33 +79,38 @@ print_r($socket);
     }
 	
 	function connect($socket){ 
-		$this->user[$socket] = array('handled'=>false, 'socket'=>$socket);  
-		array_push($this->users, $user);  
+		$this->users[] = array('handshaked'=>false, 'socket'=>$socket);  
 		array_push($this->sockets, $socket);  
 		$this->log($socket." CONNECTED!");  
 		$this->log(date("d/n/Y ")."at ".date("H:i:s T"));  
 	}  
 	
-	function disconnect($socket){  
-		$found = null;  
-		$n = count($this->users);  
-		for($i = 0;$i < $n;$i ++){  
-			if($this->users[$i]->socket == $socket){ 
-				$found=$i; 
-				break; 
-			}  
-		}  
-		if(!is_null($found)){ 
-			array_splice($this->users,$found,1);
-		}  
-		$index = array_search($socket,$this->sockets);  
+	function disconnect($socket){
+		foreach($this->users as $i=>$user){
+			if($user['socket'] == $socket){
+				unset($this->users[$i]);
+				break;
+			}
+		}
 		socket_close($socket);  
 		$this->log($socket." DISCONNECTED!");  
+		$index = array_search($socket,$this->sockets);  
 		if($index>=0){ 
 			array_splice($this->sockets,$index,1); 
 		}  
 	}  
 
+	function getUserIndexBySocket($socket){
+		$found = null;
+		foreach($this->users as $i=>$user){
+			if($user['socket'] == $socket){
+				$found = $i;
+				break;
+			}
+		}
+		return $i;
+	}
+	
 	  // 解析数据帧
 	function decode($buffer)  {
 // print_r($buffer);		
@@ -159,8 +168,10 @@ print_r($socket);
 		return base64_encode(sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
 	}
 	
-	function dohandshake($socket, $req){
+	function dohandshake($user_index, $req){
 		// 获取加密key
+		$user = $this->users[$user_index];
+		$socket = $user['socket'];
 		$acceptKey = $this->encry($req);
 		$upgrade = "HTTP/1.1 101 Switching Protocols\r\n" .
 				   "Upgrade: websocket\r\n" .
@@ -171,7 +182,7 @@ print_r($socket);
 		// 写入socket
 		socket_write($socket,$upgrade.chr(0), strlen($upgrade.chr(0)));
 		// 标记握手已经成功，下次接受数据采用数据帧格式
-		$this->handshake = true;
+		$this->users[$user_index]['handshaked'] = true;
 	}	
 }
 
