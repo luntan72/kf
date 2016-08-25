@@ -5,6 +5,7 @@ Class kf_ws extends kf_object {
     var $master;  // 连接 server 的 client
     var $sockets = array(); // 不同状态的 socket 管理
     var $handshake = false; // 判断是否握手
+    var $users = array();
 
 	protected function init($params){
 		parent::init($params);
@@ -45,23 +46,26 @@ print_r($socket);
                         // debug
                         echo "socket_accept() failed";
                         continue;
-                    } else {
-                        //connect($client);
+                    } 
+					else {
+                        //$this->connect($client);
                         array_push($this->sockets, $client);
                         echo "connect client\n";
                     }
-                } else {
+                } 
+				else {
                     $bytes = @socket_recv($socket,$buffer,2048,0);
                     if($bytes == 0) return;
                     if (!$this->handshake) {
                         // 如果没有握手，先握手回应
                         $this->doHandShake($socket, $buffer);
                         echo "shakeHands\n";
-                    } else {
+                    } 
+					else {
                         // 如果已经握手，直接接受数据，并处理
                         $buffer = $this->decode($buffer);
 						// $this->send($socket, $buffer);
-                        //process($socket, $buffer);
+                        //$this->process($socket, $buffer);
                         echo "send file:$buffer\n";
                     }
                 }
@@ -70,7 +74,35 @@ print_r($socket);
         }
     }
 	
-	// 解析数据帧
+	function connect($socket){ 
+		$this->user[$socket] = array('handled'=>false, 'socket'=>$socket);  
+		array_push($this->users, $user);  
+		array_push($this->sockets, $socket);  
+		$this->log($socket." CONNECTED!");  
+		$this->log(date("d/n/Y ")."at ".date("H:i:s T"));  
+	}  
+	
+	function disconnect($socket){  
+		$found = null;  
+		$n = count($this->users);  
+		for($i = 0;$i < $n;$i ++){  
+			if($this->users[$i]->socket == $socket){ 
+				$found=$i; 
+				break; 
+			}  
+		}  
+		if(!is_null($found)){ 
+			array_splice($this->users,$found,1);
+		}  
+		$index = array_search($socket,$this->sockets);  
+		socket_close($socket);  
+		$this->log($socket." DISCONNECTED!");  
+		if($index>=0){ 
+			array_splice($this->sockets,$index,1); 
+		}  
+	}  
+
+	  // 解析数据帧
 	function decode($buffer)  {
 // print_r($buffer);		
 		$len = $masks = $data = $decoded = null;

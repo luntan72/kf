@@ -5,6 +5,7 @@ class kf_object{
 	protected $params = array(); //外部传入的参数
 	protected $options = array();//内部产生的数据
 	protected $tool = null;
+	protected $debug = false;
 	public function __construct($params = array()){
 		$this->init($params);
 	}
@@ -52,5 +53,11 @@ class kf_object{
 				$this->params[$name] = $v;
 		}
 	}
+	
+	function     say($msg=""){ echo $msg."\n"; }  
+	function     log($msg=""){ if($this->debug){ echo $msg."\n"; } }  
+	function    wrap($msg=""){ return chr(0).$msg.chr(255); }  
+	function  unwrap($msg=""){ return substr($msg,1,strlen($msg)-2); }  
+	
 }
 ?>
