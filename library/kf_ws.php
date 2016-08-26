@@ -33,14 +33,15 @@ Class kf_ws extends kf_object {
             $write = array();
             $except = array();
 		// print_r("before select\n");	
-            if(socket_select($read, $write, $except, 0) === 0)
+            if(socket_select($read, $write, $except, NULL) === 0)
 				continue;
-
+// print_r($read);
+// print_r($write);
+// print_r($except);
             foreach ($read as $socket) {
+// print_r($socket);				
                 //连接主机的 client
-print_r($socket);				
                 if ($socket == $this->master){
-		print_r("before accept\n");			
                     $client = socket_accept($this->master);
                     if ($client < 0) {
                         // debug
@@ -56,6 +57,7 @@ print_r($socket);
                     $bytes = @socket_recv($socket,$buffer,2048,0);
 // print_r($buffer);					
                     if($bytes == 0){
+						print_r("bytes = 0");
 						$this->disconnect($socket);
 						break;
 					}
@@ -67,13 +69,17 @@ print_r($socket);
                     } 
 					else {
                         // 如果已经握手，直接接受数据，并处理
-                        $buffer = $this->decode($buffer);
-						// $this->send($socket, $buffer);
-                        //$this->process($socket, $buffer);
-                        echo "send file:$buffer\n";
+                        // $buffer = $this->decode($buffer);
+                        $buffer = $this->unwrap($socket, $buffer);
+						if(!is_null($buffer)){
+							$this->process($socket, $buffer);
+						}
                     }
                 }
             }
+			// foreach($write as $socket){
+				// print_r($socket);
+			// }
 			sleep(1);
         }
     }
@@ -111,7 +117,85 @@ print_r($socket);
 		return $i;
 	}
 	
-	  // 解析数据帧
+	protected function unwrap($clientSocket, $msg="")
+	{ 
+		$opcode = ord(substr($msg, 0, 1)) & 0x0F;
+		$payloadlen = ord(substr($msg, 1, 1)) & 0x7F;
+		$ismask = (ord(substr($msg, 1, 1)) & 0x80) >> 7;
+		$maskkey = null;
+		$oridata = null;
+		$decodedata = null;
+		
+		//close socket
+		if ($ismask != 1 || $opcode == 0x8)
+		{
+			$this->disconnect($clientSocket);
+			return null;
+		}
+		
+		//get the masking key and masked data
+		if ($payloadlen <= 125 && $payloadlen >= 0)
+		{
+			$maskkey = substr($msg, 2, 4);
+			$oridata = substr($msg, 6);
+		}
+		else if ($payloadlen == 126)
+		{
+			$maskkey = substr($msg, 4, 4);
+			$oridata = substr($msg, 8);
+		}
+		else if ($payloadlen == 127)
+		{
+			$maskkey = substr($msg, 10, 4);
+			$oridata = substr($msg, 14);
+		}
+		$len = strlen($oridata);
+		for($i = 0; $i < $len; $i++)   //decode the masked data
+		{
+			$decodedata .= $oridata[$i] ^ $maskkey[$i % 4];
+		}		
+		return $decodedata; 
+	}
+	
+    function code($msg){
+      $msg = preg_replace(array('/\r$/','/\n$/','/\r\n$/',), '', $msg);
+      $frame = array();  
+      $frame[0] = '81';  
+      $len = strlen($msg);  
+      $frame[1] = $len<16?'0'.dechex($len):dechex($len);
+      $frame[2] = $this->ord_hex($msg);
+      $data = implode('',$frame);
+      return pack("H*", $data);
+    }
+    function ord_hex($data)  {  
+      $msg = '';  
+      $l = strlen($data);  
+      for ($i= 0; $i<$l; $i++) {  
+        $msg .= dechex(ord($data{$i}));  
+      }  
+      return $msg;  
+    }
+	
+	protected function wrap($msg="", $opcode = 0x1){
+		$msg = rtrim($msg);
+		//control bit, default is 0x1(text data)
+		$firstByte = 0x80 | $opcode;
+		$encodedata = null;
+		$len = strlen($msg);
+		if (0 <= $len && $len <= 125)
+			$encodedata = chr(0x81) . chr($len) . $msg;
+		else if (126 <= $len && $len <= 0xFFFF)
+		{
+			$low = $len & 0x00FF;
+			$high = ($len & 0xFF00) >> 8;
+			$encodedata = chr($firstByte) . chr(0x7E) . chr($high) . chr($low) . $msg;
+		}
+// print_r("len = $len, firstByte = $firstByte, msg = >>$msg<<, encodedata = ".bin2hex($encodedata)."\n");		
+		
+		return utf8_encode($encodedata);			
+	}
+	
+	// 解析数据帧
 	function decode($buffer)  {
 // print_r($buffer);		
 		$len = $masks = $data = $decoded = null;
@@ -147,10 +231,19 @@ print_r($socket);
 		return $ns;
 	}
 
+	protected function process($client, $msg){
+print_r("process $msg\n");		
+		$bytes = $this->send($client, $msg);
+print_r("send $bytes byte\n");		
+		return true;
+	}
+	
 	// 返回数据
 	function send($client, $msg){
-		$msg = $this->frame($msg);
-		socket_write($client, $msg, strlen($msg));
+		$wrap = $this->wrap($msg);
+print_r($client);		
+		$bytes = socket_write($client, $wrap, strlen($wrap));
+		return $bytes;
 	}	
 	
 	function getKey($req) {
@@ -169,6 +262,7 @@ print_r($socket);
 	}
 	
 	function dohandshake($user_index, $req){
+// print_r($req);		
 		// 获取加密key
 		$user = $this->users[$user_index];
 		$socket = $user['socket'];
@@ -186,5 +280,5 @@ print_r($socket);
 	}	
 }
 
-$ws = new kf_ws(array('address'=>'localhost', 'port'=>4000));
+$ws = new kf_ws(array('address'=>'127.0.0.1', 'port'=>40001));
 ?>

@@ -56,8 +56,5 @@ class kf_object{
 	
 	function     say($msg=""){ echo $msg."\n"; }  
 	function     log($msg=""){ if($this->debug){ echo $msg."\n"; } }  
-	function    wrap($msg=""){ return chr(0).$msg.chr(255); }  
-	function  unwrap($msg=""){ return substr($msg,1,strlen($msg)-2); }  
-	
 }
 ?>
