@@ -10,7 +10,7 @@ function debug ($msg)
 }  
 if ($argv[1]) {  
 	  
-	$socket_client = stream_socket_client('tcp://localhost:2000', $errno, $errstr, 30);  
+	$socket_client = stream_socket_client('tcp://localhost:4000', $errno, $errstr, 30);  
 	  
 //  stream_set_timeout($socket_client, 0, 100000);  
 	  
