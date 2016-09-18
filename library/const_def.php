@@ -18,6 +18,7 @@ defined("DISPLAY_STATUS_VIEW") || define("DISPLAY_STATUS_VIEW", 1);
 defined("DISPLAY_STATUS_EDIT") || define("DISPLAY_STATUS_EDIT", 2);
 defined("DISPLAY_STATUS_NEW") || define("DISPLAY_STATUS_NEW", 3);
 defined("DISPLAY_STATUS_QUERY") || define("DISPLAY_STATUS_QUERY", 4);
+defined("DISPLAY_STATUS_LIST") || define("DISPLAY_STATUS_LIST", 5);
 
 
 defined('ERROR_OK') || define('ERROR_OK', 0);

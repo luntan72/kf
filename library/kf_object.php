@@ -55,6 +55,6 @@ class kf_object{
 	}
 	
 	function     say($msg=""){ echo $msg."\n"; }  
-	function     log($msg=""){ if($this->debug){ echo $msg."\n"; } }  
+	// function     log($msg=""){ if($this->debug){ echo $msg."\n"; } }  
 }
 ?>

@@ -1546,15 +1546,17 @@ class kf_tool extends kf_object{
 // print_r("\n>>>>>>name = {$columnDef['name']}\n");
 // print_r($columnDef['addoptions']);	
 // }
+
+// print_r("display_status = $display_status");
                 // if ($columnDef['edittype'] == 'select'){
-                    if (empty($columnDef['addoptions']['value'])){
+                    if (empty($columnDef['addoptions']['value'])){//} && $display_status == DISPLAY_STATUS_NEW){
 // print_r(">>>>>>>>>{$columnDef['name']}>>>>>>>>>>>>>>>");						
 						$columnDef['addoptions']['value'] = $addoptions;
                     }
-                    if (empty($columnDef['editoptions']['value'])){
+                    if (empty($columnDef['editoptions']['value'])){//} && ($display_status == DISPLAY_STATUS_EDIT || $display_status == DISPLAY_STATUS_VIEW)){
 						$columnDef['editoptions']['value'] = $options;
                     }
-                    if (empty($columnDef['formatoptions']['value'])){
+                    if (empty($columnDef['formatoptions']['value'])){//} && $display_status == DISPLAY_STATUS_LIST){
                         $columnDef['formatoptions']['value'] = $formatOptionsValue;
                     }
                     if (empty($columnDef['searchoptions']['value'])){
@@ -1568,7 +1570,8 @@ class kf_tool extends kf_object{
 // if($columnDef['name'] == 'period_id'){				
 // print_r($columnDef['addoptions']);	
 // print_r("<<<<<<<<<<<<<<<<<<<<BR>\n");
-// }				
+// }			
+// print_r($columnDef);	
             }
         }
     }

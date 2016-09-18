@@ -26,7 +26,10 @@ class action_list extends action_jqgrid{
         // $this->config();
 // print_r($options);
 		$this->models = $options['list'];//['gridOptions']['colModel'];
+// print_r($this->models);		
 		$this->colModelMap = $options['gridOptions']['colModelMap'];
+// print_r($this->colModelMap);
+// print_r($options['gridOptions']);		
 		$this->params = $this->filterParams();
         $rownum = $this->params['limit']['rows'];
 		if ($rownum == 0)
@@ -66,6 +69,7 @@ class action_list extends action_jqgrid{
         $rows = array();
         while($row = $res->fetch()){
 			$row = $this->getMoreInfoForRow($row);
+			$row = $this->trans($row);
 			if (!empty($sqlKeys))
 				$row = $this->hilightKeys($row, $sqlKeys);
 			$rows[] = $row;
@@ -84,6 +88,36 @@ class action_list extends action_jqgrid{
 		$ret = $this->handlePost();
 // print_r("...after getList<br>\n");		
 		return $ret['rows'];
+	}
+	
+	//主要是将一个id转换成name，避免前端处理
+	protected function trans($row){
+		return $row;
+		if($this->params['display_status'] != DISPLAY_STATUS_LISTS)
+			return $row;
+		$models = array();
+		//如果字段格式是select或select_showlink
+		foreach($row as $field=>$v){
+			if(empty($this->colModelMap[$field]))
+				continue;
+			$model = $this->models[$this->colModelMap[$field]];
+// print_r("field = $field\n");
+// print_r($model);				
+			if(!empty($model['trans']) && $model['formatter'] == 'text'){
+				$a_v = explode(',', $v);
+				$p = array();
+				if(!isset($models[$field])){
+					$models[$field] = $this->tool->str2Array($model['formatoptions']['value']);
+// if($field == 'os_id')
+// print_r($models[$field]);	
+				}
+				foreach($a_v as $e)
+					$p[] = isset($models[$field][$e]) ? $models[$field][$e] : $e;
+				$row[$field] = implode(",\n", $p);//$model['addoptions']['value'][$row[$field]];
+			}
+		}
+	
+		return $row;
 	}
 	
 	protected function hilightKeys($row, $keys){

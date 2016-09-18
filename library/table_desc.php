@@ -63,6 +63,7 @@ class table_desc extends kf_object{
 					$this->options['subGrid']['additional'][$condMap['field']] = $condMap['value'];
 			}
 		}
+	// print_r($this->params);	
 	}
 
 	public function post_init(){
@@ -520,7 +521,7 @@ class table_desc extends kf_object{
 		return $ret;
 	}
 	
-	protected function getOptionData($column){
+	protected function getOptionData($column, $display_status){
 		$needStrictLimit = false;
 		if(!empty($column['data_source_table']) || !empty($column['data_source_sql'])){
 			if($this->tool->tableExist($column['data_source_table'], $column['data_source_db'])){
@@ -591,7 +592,7 @@ class table_desc extends kf_object{
 						}
 					}
 					else
-						$this->tool->fillOptions($column);
+						$this->tool->fillOptions($column, $display_status);
 					$column['filled'] = true;
 // $this->tool->p_t("finish to getOptionData: {$column['data_source_table']}");
 					
@@ -604,19 +605,36 @@ class table_desc extends kf_object{
 	}
 	
 	protected function fillOptions($idx){
+		switch($idx){
+			case 'query':
+				$display_status = DISPLAY_STATUS_QUERY;
+				break;
+			case 'view':
+				$display_status = DISPLAY_STATUS_VIEW;
+				break;
+			case 'add':
+				$display_status = DISPLAY_STATUS_NEW;
+				break;
+			case 'edit':
+				$display_status = DISPLAY_STATUS_EDIT;
+				break;
+			case 'list':
+				$display_status = DISPLAY_STATUS_LIST;
+				break;
+		}
 		if($idx == 'query'){
 			foreach($this->options[$idx]['normal'] as $field=>&$column){
-				$column = $this->getOptionData($column);
+				$column = $this->getOptionData($column, $display_status);
 			}
 			if(isset($this->options[$idx]['advanced'])){
 				foreach($this->options[$idx]['normal'] as $field=>&$column){
-					$column = $this->getOptionData($column);
+					$column = $this->getOptionData($column, $display_status);
 				}
 			}
 		}
 		else{
 			foreach($this->options[$idx] as $field=>&$column){
-				$column = $this->getOptionData($column);
+				$column = $this->getOptionData($column, $display_status);
 			}
 		}
 	}
@@ -829,6 +847,7 @@ class table_desc extends kf_object{
     
 	public function trimColModel($colModel){
 		$trimed = array();
+		$colMap = array();
 		$container = isset($this->params['container']) ? $this->params['container'] : 'mainContent';
         $params = array('user_id'=>$this->userInfo->id, 'name'=>$this->params['db'].'_'.$this->params['table']);
 		$cookie = json_decode($this->userAdmin->getCookie($params));
@@ -866,8 +885,10 @@ class table_desc extends kf_object{
 //print_r($tmp);            
 			if (!$notMatch){
 				for($i = 0; $i < $maxOrder; $i ++){
-					if (isset($tmp[$i]))
+					if (isset($tmp[$i])){
 						$trimed[$i] = $tmp[$i];
+						$colMap[$tmp[$i]['name']] = $i;
+					}						
 					else{
 						$notMatch = true;
 						break;
@@ -877,6 +898,9 @@ class table_desc extends kf_object{
         }
 		if ($notMatch)
             $trimed = $colModel;	
+		else
+			$this->colModelMap = $colMap;
+			
 		return $trimed;
 	}
 	
