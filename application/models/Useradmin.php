@@ -39,7 +39,7 @@ class Application_Model_Useradmin{
         $this->userInfo->id = 0;
         $this->userInfo->nickname = 'Guest';
         $this->userInfo->roles = array('guest');
-	$this->userInfo->group_ids = '0';
+		$this->userInfo->group_ids = '0';
         $this->userInfo->menus = $this->getNavigationMenus(array('guest'));
 		$this->userInfo->indexList = $this->getIndexList(array('guest'));
     }
@@ -89,6 +89,7 @@ class Application_Model_Useradmin{
 // print_r($v);	
 // print_r("<<<<<<<<");		
 				if(!is_array($v) || (isset($v['display']) && $v['display'] == 'true')){
+					// if(!isset($v['label']))$v['label'] = ucwords($name);
 					$display_menus[$header][$name] = $v;
 				}
 			}
@@ -213,13 +214,13 @@ class Application_Model_Useradmin{
 			$res = $this->db->query("SELECT GROUP_CONCAT(distinct groups_id) as group_ids FROM groups_users WHERE users_id=$userId");
 			$row = $res->fetch();
 			$group_ids = $row['group_ids'];
-            $this->userInfo->roles = $roles;
+            // $this->userInfo->roles = $roles;
 			$this->userInfo->group_ids = $group_ids;
 			unset($this->userInfo->password);
 			unset($this->userInfo->password_salt);
-            $this->userInfo->acl = serialize($acl);
-            $this->userInfo->menus = $this->getNavigationMenus($this->userInfo->roles);
-			$this->userInfo->indexList = $this->getIndexList($this->userInfo->roles);
+            // $this->userInfo->acl = serialize($acl);
+            $this->userInfo->menus = $this->getNavigationMenus($roles);
+			$this->userInfo->indexList = $this->getIndexList($roles);
 //print_r($row);            
         }
         else{

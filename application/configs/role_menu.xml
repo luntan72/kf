@@ -4,7 +4,7 @@
         <user>
             <login action="userAdmin_login" />
             <home action="userAdmin_index" />
-            <logout action="userAdmin_logout" />
+            <logout action="userAdmin_logout" label="Logout" />
             <changepassword action="userAdmin_changePassword" label="Change Password" />
             <updateprofile action="userAdmin_updateProfile" label="Update Profile" />
             <register action="userAdmin_register" />

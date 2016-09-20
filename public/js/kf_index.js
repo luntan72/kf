@@ -6,10 +6,10 @@ XT = XT || {};
 	var refreshing = false
 	var outerLayout;
 
-	this.layoutHomePage = function(userInfo) {
+	this.layoutHomePage = function(userId) {
 		var $this = this;
 		// var outerLayout;
-		var loginSuccess = userInfo.id;
+		var loginSuccess = userId;
 		
 		var layoutSettings_Outer = {
 			name: "outerLayout" // NO FUNCTIONAL USE, but could be used by custom code to 'identify' a layout
@@ -353,11 +353,17 @@ XT = XT || {};
 		});
 	};
 
-	this.showUserMenus = function(userInfo){
+	this.showUserMenus = function(menu, userId, userNickName){
 		var $this = this;
 		var cookie_account = $.cookie('XT_Account') || '', cookie_password = $.cookie('XT_Password') || '', cookie_autoLogin = $.cookie('XT_AutoLogin') || false;
 		var html = [];
-		$.each(userInfo.menus.user, function(item, v){
+		var checked = " checked='checked'";
+		if(cookie_autoLogin != 'true'){
+			cookie_account = cookie_password = '';
+			checked = '';
+		}
+	// XT.debug([cookie_autoLogin, checked]);	
+		$.each(menu, function(item, v){
 			if (v['label'] === undefined){
 				v['label'] = $this.ucwords(item);
 			}
@@ -368,15 +374,18 @@ XT = XT || {};
 					html.push("<label for='useradmin_acount'>User:"
 						+ "<input type='text' name='account' id='useradmin_account' placeholder='account'"
 						+ " onkeypress='return XT.jumpTo(event, \"#useradmin_password\")' value='" + cookie_account + "' " 
-						+ " />"
+						+ " /></label>"
 						+ " <label for='useradmin_password'>Password:"
 						+ " <input type='password' name='password' id='useradmin_password' placeholder='password'" 
 						+ " onkeypress='return XT.triggerButton(event, \"#useradmin_login\")' value='" + cookie_password + "'"
-						+ " />"
-						+ " <a onclick='return XT.userAdmin_login()' id='useradmin_login' href='javascript:void(0)'>Login</a>"); 
+						+ " /></label>"
+						+ " <a onclick='return XT.userAdmin_login()' id='useradmin_login' href='javascript:void(0)'>Login</a>"
+						// + " <label for='remember'><input type='checkbox' name='useradmin_remember' id='useradmin_remember' value='1' title='Remember user and password'/>Remember</label>"
+						+ " <label for='useradmin_autologin'><input type='checkbox' name='useradmin_autologin' id='useradmin_autologin' " + checked + " title='Auto Login'>Auto Login</label>"
+					); 
 				}
 				else if (item == 'home'){
-					html.push("Welcome <a href='javascript:XT.user_action(\"" + v['action'] + "\")'> " + userInfo.nickname + "</a>");
+					html.push("Welcome <a href='javascript:XT.user_action(\"" + v['action'] + "\")'> " + userNickName + "</a>");
 				}
 				else{
 					html.push("<a href='javascript:XT.user_action(\"" + v['action'] + "\")'> " + v['label'] + "</a>");
@@ -384,7 +393,7 @@ XT = XT || {};
 			}
 		});
 		$('#personalmenu').html(html.join(' | '));
-		if (userInfo.id != 0) // logined
+		if (userId != 0) // logined
 			this.start_refresh_loop();
 		else // not logined
 			this.stop_refresh_loop();
@@ -442,6 +451,7 @@ XT = XT || {};
 	}
 		
 	this.showNaviMenus = function(menus){
+// XT.debug(menus);		
 		var html = this.getMenus(menus);
 		$('#menuPanel').html(html.join(' '));
 		$( "#menuPanel" ).accordion("destroy").accordion({
@@ -495,12 +505,14 @@ XT = XT || {};
 
 	this.userAdmin_login = function(){
 		var $this = this;
-		var account = $('#useradmin_account').attr('value');
-		var password = $('#useradmin_password').attr('value');
-		$this.__userAdmin_login(account, password);
+		var account = $('#useradmin_account').val();
+		var password = $('#useradmin_password').val();
+		// var remember = $('#useradmin_remember').attr('value');
+		var autologin = $('#useradmin_autologin').is(':checked');
+		$this.__userAdmin_login(account, password, autologin);
 	}
 
-	this.__userAdmin_login = function(account, password){
+	this.__userAdmin_login = function(account, password, autologin){
 		var $this = this;
 		$.ajax({
 			type:'POST',
@@ -512,7 +524,7 @@ XT = XT || {};
 				if (msg.result == 'TRUE'){
 					//更新Home页面的标题
 					$('#mainContent ul li a#home').html(msg.userInfo.nickname + "'s Home");
-					$this.showUserMenus(msg.userInfo);    
+					$this.showUserMenus(msg.userInfo.menus.user, msg.userInfo.id, msg.userInfo.nickname);    
 					$this.showNaviMenus(msg.userInfo.menus); 
 					$this.userAdmin_updateHomePage();
 					outerLayout.toggle('north');
@@ -520,7 +532,8 @@ XT = XT || {};
 					// $('#tbarToggleNorth').click();
 					$.cookie('XT_Account', account, {expires: 30});
 					$.cookie('XT_Password', password, {expires: 30});
-					$.cookie('XT_AutoLogin', 1, {expires: 30});
+					// $.cookie('XT_Remember', remember, {expires: 30});
+					$.cookie('XT_AutoLogin', autologin, {expires: 30});
 				}
 				else
 					$this.noticeDialog("Failed to login for wrong account or unmatched password, please try it again", "Fail to login");

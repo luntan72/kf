@@ -192,7 +192,7 @@ class action_information extends action_jqgrid{
 // print_r($view_params);
 		$v = array();
 		if(!empty($view_params['id'])){
-			$params = array('db'=>$view_params['db'], 'table'=>$view_params['table'], 'id'=>$view_params['id'], 'rows'=>1);
+			$params = array('db'=>$view_params['db'], 'table'=>$view_params['table'], 'id'=>$view_params['id'], 'rows'=>1, 'display_status'=>$this->params['display_status']);
 // print_r($params);
 			$action_list = actionFactory::get(null, /*$this->controller,*/ 'list', $params);
 			// $action_list->setParams($params);

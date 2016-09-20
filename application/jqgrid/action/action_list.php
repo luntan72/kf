@@ -9,6 +9,8 @@ class action_list extends action_jqgrid{
 	
 	public function setParams($params){
 		$params['fill'] = false;
+		if(!isset($params['display_status']))
+			$params['display_status'] = DISPLAY_STATUS_LIST;
 		parent::setParams($params);
 	}
 	
@@ -17,6 +19,7 @@ class action_list extends action_jqgrid{
 	}
 	
 	protected function handlePost(){
+// print_r($this->params);		
 		$rows = array();
 		$sql = '';
 		$sqls = array();
@@ -31,6 +34,7 @@ class action_list extends action_jqgrid{
 // print_r($this->colModelMap);
 // print_r($options['gridOptions']);		
 		$this->params = $this->filterParams();
+// print_r($this->params);		
         $rownum = $this->params['limit']['rows'];
 		if ($rownum == 0)
 			$rownum = 'ALL';
@@ -93,14 +97,16 @@ class action_list extends action_jqgrid{
 	//主要是将一个id转换成name，避免前端处理
 	protected function trans($row){
 		return $row;
-		if($this->params['display_status'] != DISPLAY_STATUS_LISTS)
+		if($this->params['display_status'] != DISPLAY_STATUS_LIST)
 			return $row;
+print_r($row);		
+print_r($this->models);
 		$models = array();
 		//如果字段格式是select或select_showlink
 		foreach($row as $field=>$v){
 			if(empty($this->colModelMap[$field]))
 				continue;
-			$model = $this->models[$this->colModelMap[$field]];
+			$model = $this->models[$field];
 // print_r("field = $field\n");
 // print_r($model);				
 			if(!empty($model['trans']) && $model['formatter'] == 'text'){
@@ -267,6 +273,7 @@ class action_list extends action_jqgrid{
 					case 'newpage':
 					case 'tab_div':
 					case 'caption':
+					case 'display_status':
                         continue;
                         break;
                     default:
@@ -573,20 +580,16 @@ class action_list extends action_jqgrid{
 					case 'one2m':
 						list($db, $table) = explode('.', $from);
 						$linkInfo = $this->options['linkTables'][$rel][$from];
+		// print_r($this->params);				
 // print_r($linkInfo);		
 // print_r("SELECT * FROM $from WHERE $from.{$linkInfo['self_link_field']}={$row['id']}");
 						// $fields = implode(',', $field);
-						$params = array('db'=>$db, 'table'=>$table, $linkInfo['self_link_field']=>$row['id']);
+						$params = array('db'=>$db, 'table'=>$table, $linkInfo['self_link_field']=>$row['id'], 'display_status'=>$this->params['display_status']);
 			// print_r($params);
 						$action_list = actionFactory::get(null, /*$this->controller,*/ 'list', $params);
 						// $action_list->setParams($params);
 						$ret = $action_list->handlePost();
 						$row[$linkInfo['table']] = $ret['rows'];
-// if($row['id'] == 135)						
-// print_r($ret);
-						// $res = $this->tool->query("SELECT * FROM $from WHERE $from.{$linkInfo['self_link_field']}={$row['id']}");
-						// $type_res = $res->fetchAll();
-						// $row[$linkInfo['table']] = $type_res;
 						break;
 					// case 'unknown':
 						// $row = $this->getUnknownInfoForRow($row, $field);

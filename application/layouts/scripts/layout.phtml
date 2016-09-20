@@ -3,7 +3,9 @@
     echo $this->doctype(); 
     $user = new Application_Model_Useradmin(null);
     $userInfo = $user->getUserInfo();
-// print_r($userInfo->nickname);    
+	$userId = $userInfo->id;
+	$userMenu = json_encode($userInfo->menus['user']);
+	$naviMenu = json_encode($userInfo->menus);
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -16,15 +18,20 @@
         ?>
         <script type='text/javascript'>
             $(function(){
-				// var tool = new kf_tool();
 				var userInfo = <?php echo json_encode($userInfo);?>;
-				XT.showUserMenus(userInfo);
-                XT.showNaviMenus(userInfo.menus);
+				var userMenu = <?php echo $userMenu; ?>;
+				var naviMenu = <?php echo $naviMenu; ?>;
+				var userId = <?php echo $userId; ?>;
+		// XT.debug(naviMenu);		
+				var userNickname = "<?php echo $userInfo->nickname; ?>";
+				XT.showUserMenus(userMenu, userId, userNickname);
+                XT.showNaviMenus(naviMenu);
 				var cookie_account = $.cookie('XT_Account') || '', cookie_password = $.cookie('XT_Password') || '', cookie_autoLogin = $.cookie('XT_AutoLogin') || false;
-				if(userInfo.id == 0 && cookie_autoLogin == 1 && cookie_account.length > 0 && cookie_password > 0){
+// XT.debug([userId, cookie_account, cookie_password, cookie_autoLogin, cookie_account.length, cookie_password.length]);
+				if(userId == 0 && cookie_autoLogin == "true" && cookie_account.length > 0 && cookie_password.length > 0){
 					XT.__userAdmin_login(cookie_account, cookie_password);
 				}
-                XT.layoutHomePage(userInfo);
+                XT.layoutHomePage(userId);
             });
         </script>
     </head>
@@ -39,7 +46,7 @@
                 </div>
                 
             	<div id="kf_banner_topbox">
-            		<div class="kf_banner_title"><?php echo $this->appInfo['name']; ?><span class="kf_banner_internal"><?php echo $this->appInfo['version'];?></span>
+            		<div class="kf_banner_title"><?php echo $this->appInfo['name']; ?> <span class="kf_banner_internal"><?php echo $this->appInfo['version'];?></span>
             		</div>
             		<div id="personalmenu" class="kf_banner_applinks">
                     </div> 

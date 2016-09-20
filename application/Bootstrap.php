@@ -22,7 +22,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap{
         $view->headLink()->appendStylesheet('/css/jquery.contextMenu.css');
 	$view->headLink()->appendStylesheet('/css/jquery.qtip.min.css');
         $view->headLink()->appendStylesheet('/css/qtip_table.css');
-        $view->headLink()->appendStylesheet('/css/jquery-te-1.4.0.css');
+        // $view->headLink()->appendStylesheet('/css/jquery-te-1.4.0.css');
 
         $view->headLink()->appendStylesheet('/css/kf_layout.css');
         // Set the initial JS to load:
@@ -40,7 +40,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap{
         $view->headScript()->appendFile('/js/lib/jqgrid_3.8.2/js/i18n/grid.locale-en.js');
         $view->headScript()->appendFile('/js/lib/jqgrid_3.8.2/js/jquery.jqGrid.min.js');
 		$view->headScript()->appendFile('/js/jquery.qtip.min.js');
-		$view->headScript()->appendFile('/js/lib/jquery-te-1.4.0.min.js');
+		// $view->headScript()->appendFile('/js/lib/jquery-te-1.4.0.min.js');
 //        $view->headScript()->appendFile('/js/jqgrid_4.4.1/js/i18n/grid.locale-en.js');
 //        $view->headScript()->appendFile('/js/jqgrid_4.4.1/js/jquery.jqGrid.min.js');
 
