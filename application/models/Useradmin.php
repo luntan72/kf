@@ -214,7 +214,7 @@ class Application_Model_Useradmin{
 			$res = $this->db->query("SELECT GROUP_CONCAT(distinct groups_id) as group_ids FROM groups_users WHERE users_id=$userId");
 			$row = $res->fetch();
 			$group_ids = $row['group_ids'];
-            // $this->userInfo->roles = $roles;
+            $this->userInfo->roles = $roles;
 			$this->userInfo->group_ids = $group_ids;
 			unset($this->userInfo->password);
 			unset($this->userInfo->password_salt);
